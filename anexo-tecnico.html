@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anexo Técnico — Factibilidad de Automatizaciones</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@400;700&family=Young+Serif&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050508;
+    --bg2: #0a0a10;
+    --surface: #10101a;
+    --border: rgba(255,255,255,0.06);
+    --border-accent: rgba(16,185,129,0.15);
+    --white: #f0f0f5;
+    --gray: #8b8b9e;
+    --muted: #55556a;
+    --accent: #10b981;
+    --accent-dim: rgba(16,185,129,0.08);
+    --green: #34d399;
+    --red: #f87171;
+    --amber: #fbbf24;
+    --blue: #3b82f6;
+    --purple: #a855f7;
+    --cyan: #06b6d4;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'Work Sans', system-ui, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  nav {
+    position: fixed; top:0; left:0; right:0; z-index:100;
+    padding: 14px 24px;
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(5,5,8,0.8);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-brand { font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:500; color:var(--accent); letter-spacing:3px; text-transform:uppercase; }
+  .nav-tag { font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--muted); }
+
+  section {
+    padding: 80px 24px;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  section:first-of-type { padding-top: 120px; }
+
+  .divider {
+    width: 100%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-accent), transparent);
+    max-width: 960px; margin: 0 auto;
+  }
+
+  .tag {
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px; font-weight:500; color:var(--accent);
+    letter-spacing:3px; text-transform:uppercase;
+    margin-bottom:14px; display:block;
+  }
+  h1 {
+    font-family:'Young Serif',serif;
+    font-size: clamp(32px,5vw,48px);
+    font-weight:900; line-height:1.08;
+    margin-bottom:20px; letter-spacing:-0.02em;
+  }
+  h2 {
+    font-family:'Young Serif',serif;
+    font-size: clamp(24px,4vw,34px);
+    font-weight:700; line-height:1.1;
+    margin-bottom:16px;
+  }
+  h3 {
+    font-size:18px; font-weight:700;
+    margin-bottom:10px;
+  }
+  .lead {
+    font-size: clamp(15px,2vw,18px);
+    color: var(--gray); line-height:1.7;
+    max-width: 700px;
+  }
+
+  /* PROCESS BLOCK */
+  .process-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px 28px;
+    margin-bottom: 16px;
+    transition: border-color 0.3s;
+  }
+  .process-block:hover { border-color: var(--border-accent); }
+  .pb-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .pb-title {
+    font-family:'Young Serif',serif;
+    font-size: 20px;
+    color: var(--white);
+  }
+  .pb-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .pb-row {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 8px;
+    padding: 6px 0;
+    font-size: 14px;
+  }
+  .pb-label {
+    font-family:'IBM Plex Mono',monospace;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding-top: 3px;
+  }
+  .pb-value { color: var(--gray); line-height: 1.5; }
+  .pb-value strong { color: var(--white); }
+
+  /* TAGS */
+  .tag-pill {
+    display:inline-block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:9px; font-weight:700;
+    letter-spacing:1px; text-transform:uppercase;
+    padding:3px 10px; border-radius:20px;
+  }
+  .tag-easy { background:rgba(34,211,153,0.15); color:var(--green); }
+  .tag-medium { background:rgba(251,191,36,0.15); color:var(--amber); }
+  .tag-hard { background:rgba(248,113,113,0.15); color:var(--red); }
+  .tag-auto { background:rgba(16,185,129,0.12); color:var(--green); }
+  .tag-ai { background:rgba(168,85,247,0.12); color:var(--purple); }
+  .tag-agent { background:rgba(6,182,212,0.12); color:var(--cyan); }
+  .tag-api { background:rgba(59,130,246,0.12); color:var(--blue); }
+
+  /* CALLOUT */
+  .callout {
+    background: var(--accent-dim);
+    border: 1px solid var(--border-accent);
+    border-radius: 14px;
+    padding: 22px 26px;
+    margin: 24px 0;
+  }
+  .callout-title { font-size:15px; font-weight:700; color:var(--accent); margin-bottom:6px; }
+  .callout p { font-size:14px; color:var(--gray); line-height:1.6; }
+
+  .callout-warn {
+    background: rgba(251,191,36,0.06);
+    border: 1px solid rgba(251,191,36,0.15);
+  }
+  .callout-warn .callout-title { color: var(--amber); }
+
+  .callout-red {
+    background: rgba(248,113,113,0.06);
+    border: 1px solid rgba(248,113,113,0.12);
+  }
+  .callout-red .callout-title { color: var(--red); }
+
+  /* SUMMARY TABLE */
+  .summary-table { width:100%; border-collapse:collapse; margin:20px 0; }
+  .summary-table th {
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px; color:var(--accent);
+    letter-spacing:2px; text-transform:uppercase;
+    text-align:left; padding:10px 14px;
+    border-bottom:1px solid var(--muted);
+  }
+  .summary-table td {
+    font-size:14px; color:var(--gray);
+    padding:10px 14px;
+    border-bottom:1px solid rgba(255,255,255,0.04);
+  }
+  .summary-table td:first-child { color:var(--white); font-weight:600; }
+
+  /* SECTION HEADER */
+  .section-header {
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px; color:var(--accent);
+    letter-spacing:3px; text-transform:uppercase;
+    margin:48px 0 20px; padding-bottom:10px;
+    border-bottom:1px solid var(--border-accent);
+  }
+
+  footer {
+    text-align:center; padding:40px 24px;
+    border-top:1px solid var(--border);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px; color:var(--muted); letter-spacing:1px;
+  }
+
+  .reveal {
+    opacity:0; transform:translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible { opacity:1; transform:translateY(0); }
+
+  @media (max-width:768px) {
+    section { padding: 48px 16px; }
+    .process-block { padding: 20px 16px; }
+    .pb-row { grid-template-columns: 1fr; gap: 2px; }
+    .pb-label { padding-top: 0; }
+    .pb-header { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">Anexo Técnico</div>
+  <div class="nav-tag">Factibilidad · Raul Zhou · 2025</div>
+</nav>
+
+<!-- INTRO -->
+<section>
+  <span class="tag">Anexo técnico</span>
+  <h1>Factibilidad de cada automatización</h1>
+  <p class="lead">Este documento detalla <strong>cómo se implementaría</strong> cada capacidad propuesta: qué tecnología se usa, qué integraciones requiere, qué dependencias tiene del despacho, nivel de complejidad real, y riesgos.</p>
+
+  <div class="callout" style="margin-top:28px;">
+    <div class="callout-title">Cómo leer este documento</div>
+    <p>Cada proceso tiene: <strong>tecnología</strong> (qué herramientas/APIs), <strong>cómo funciona</strong> (implementación técnica), <strong>dependencias</strong> (qué necesitamos del despacho), <strong>complejidad</strong> (fácil/media/alta), y <strong>riesgos</strong> (qué puede salir mal). Los colores indican factibilidad real, no marketing.</p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- INGRESO DE INFORMACIÓN -->
+<section>
+  <div class="section-header">📥 Ingreso y clasificación de información</div>
+
+  <div class="process-block reveal">
+    <div class="pb-header">
+      <div class="pb-title">Descarga automática de CFDI del SAT</div>
+      <div class="pb-tags">
+        <span class="tag-pill tag-api">API</span>
+        <span class="tag-pill tag-easy">Fácil</span>
+      </div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Tecnología</div>
+      <div class="pb-value">Web service SOAP del SAT para descarga masiva de XML, o API de terceros como <strong>SAT WS</strong>, <strong>Facturapi</strong>, o <strong>SW Sapien</strong> que abstraen la complejidad del SOAP.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Cómo funciona</div>
+      <div class="pb-value">Se autentifica con la <strong>FIEL o CSD</strong> de cada cliente. Se programa descarga diaria/semanal automática de todos los CFDI emitidos y recibidos. Los XML se parsean, se extraen los datos (RFC, monto, concepto, impuestos, UUID) y se almacenan en base de datos estructurada.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Dependencias</div>
+      <div class="pb-value">FIEL o CSD vigente de cada cliente. Autorización firmada para actuar en su nombre. Renovación cuando venzan (cada 4 años).</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Riesgos</div>
+      <div class="pb-value">SAT ocasionalmente cambia su web service sin aviso previo. Mitigación: usar proveedor tercero (SAT WS, Facturapi) que absorben los cambios. Costo adicional: ~$200-500 MXN/mes por RFC dependiendo del proveedor.</div>
+    </div>
+  </div>
+
+  <div class="process-block reveal">
+    <div class="pb-header">
+      <div class="pb-title">Clasificación de gastos con IA</div>
+      <div class="pb-tags">
+        <span class="tag-pill tag-ai">IA</span>
+        <span class="tag-pill tag-medium">Media</span>
+      </div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Tecnología</div>
+      <div class="pb-value">Modelo de lenguaje (GPT-4o / Claude) con fine-tuning o few-shot learning sobre el catálogo de cuentas del despacho. Alternativamente, clasificador supervisado entrenado con datos históricos.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Cómo funciona</div>
+      <div class="pb-value">Se alimenta con: <strong>concepto del CFDI</strong>, nombre del proveedor, RFC, monto, historial de clasificaciones previas. El modelo sugiere cuenta contable. El contador <strong>revisa y corrige</strong> — cada corrección retroalimenta al modelo para mejorar. Con ~500 facturas clasificadas manualmente, el modelo alcanza >90% de precisión.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Dependencias</div>
+      <div class="pb-value">Catálogo de cuentas actualizado del despacho. Historial de al menos 3-6 meses de facturas ya clasificadas para entrenamiento inicial. Sin historial, se arranca con reglas manuales y el modelo aprende sobre la marcha (más lento).</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Riesgos</div>
+      <div class="pb-value">Precisión baja al inicio si no hay datos históricos suficientes. <strong>Nunca será 100% automático</strong> — siempre requiere supervisión humana, especialmente para conceptos ambiguos o proveedores nuevos. El valor es reducir de 100% revisión manual a ~10-15% revisión.</div>
+    </div>
+  </div>
+
+  <div class="process-block reveal">
+    <div class="pb-header">
+      <div class="pb-title">Validación masiva de CFDI ante SAT</div>
+      <div class="pb-tags">
+        <span class="tag-pill tag-api">API</span>
+        <span class="tag-pill tag-easy">Fácil</span>
+      </div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Tecnología</div>
+      <div class="pb-value">Servicio de validación del SAT (consulta por UUID) o APIs de terceros (Facturapi, SW). Verificación de: estatus (vigente/cancelado), integridad del sello digital, RFC emisor/receptor.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Cómo funciona</div>
+      <div class="pb-value">Batch automatizado: cada vez que entran CFDI nuevos, se validan en lote contra el SAT. Se genera reporte de facturas canceladas, con inconsistencias, o de emisores no localizados. Alertas automáticas para facturas en riesgo.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Dependencias</div>
+      <div class="pb-value">Ninguna especial — los UUID vienen en los XML descargados. Solo requiere acceso a internet.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Riesgos</div>
+      <div class="pb-value">Bajo. El servicio del SAT tiene rate limits; para volúmenes grandes (>10K facturas/día) se necesita proveedor tercero.</div>
+    </div>
+  </div>
+
+  <div class="process-block reveal">
+    <div class="pb-header">
+      <div class="pb-title">OCR para documentos escaneados (PDF→datos)</div>
+      <div class="pb-tags">
+        <span class="tag-pill tag-ai">IA + OCR</span>
+        <span class="tag-pill tag-medium">Media</span>
+      </div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Tecnología</div>
+      <div class="pb-value"><strong>Azure Document Intelligence</strong> (antes Form Recognizer), <strong>Google Document AI</strong>, o modelo multimodal (GPT-4o Vision, Claude Vision) para documentos no estructurados. Para facturas mexicanas específicamente, hay modelos pre-entrenados.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Cómo funciona</div>
+      <div class="pb-value">El documento (foto, PDF escaneado, imagen de WhatsApp) se envía al modelo. Extrae: emisor, receptor, monto, fecha, concepto, desglose de impuestos. Para facturas con XML adjunto, el OCR es innecesario (se usa el XML directo). El OCR es para: recibos sin CFDI, notas de venta, tickets, comprobantes bancarios.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Dependencias</div>
+      <div class="pb-value">Calidad de los documentos. Fotos borrosas, PDFs protegidos, o documentos muy dañados bajan la precisión significativamente.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Riesgos</div>
+      <div class="pb-value">Precisión de ~85-95% dependiendo de calidad. <strong>Siempre requiere validación humana.</strong> Costo por documento: ~$0.50-2 MXN dependiendo del proveedor. Para volúmenes altos, el costo se acumula.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CONTABILIDAD -->
+<section>
+  <div class="section-header">📊 Contabilidad</div>
+
+  <div class="process-block reveal">
+    <div class="pb-header">
+      <div class="pb-title">Conciliaciones bancarias automáticas</div>
+      <div class="pb-tags">
+        <span class="tag-pill tag-auto">Automatización</span>
+        <span class="tag-pill tag-medium">Media</span>
+      </div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Tecnología</div>
+      <div class="pb-value">Parser de estados de cuenta bancarios (OFX, CSV, PDF) + motor de matching inteligente. Open Banking APIs donde estén disponibles (todavía limitado en México). Para PDFs bancarios: OCR + extracción estructurada.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Cómo funciona</div>
+      <div class="pb-value">Se importa el estado de cuenta (archivo o descarga automática si el banco lo permite). El motor cruza cada movimiento bancario contra: CFDI registrados, pólizas existentes, patrones históricos. Identifica: <strong>movimientos sin factura</strong>, facturas sin movimiento bancario, diferencias de montos, movimientos duplicados. Genera reporte de partidas en conciliación.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Dependencias</div>
+      <div class="pb-value"><strong>Formato de estados de cuenta</strong> — cada banco usa formato diferente. Requiere configuración inicial por banco. Los PDFs bancarios son los más problemáticos (cada banco tiene layout distinto). Ideal: que el cliente descargue en formato CSV/OFX cuando sea posible.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Riesgos</div>
+      <div class="pb-value">La lógica de matching nunca es perfecta — siempre habrá partidas que requieren juicio humano (pagos parciales, comisiones agrupadas, depósitos no identificados). El valor es reducir el trabajo manual de horas a minutos de revisión de excepciones.</div>
+    </div>
+  </div>
+
+  <div class="process-block reveal">
+    <div class="pb-header">
+      <div class="pb-title">Registro automático de pólizas</div>
+      <div class="pb-tags">
+        <span class="tag-pill tag-auto">Automatización</span>
+        <span class="tag-pill tag-hard">Alta</span>
+      </div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Tecnología</div>
+      <div class="pb-value">Depende completamente del ERP/sistema contable del despacho. <strong>CONTPAQi:</strong> SDK/API disponible (COM objects, .NET). <strong>Aspel:</strong> base de datos accesible (Firebird/SQL). <strong>AdminPAQ:</strong> SDK limitado. <strong>Excel:</strong> generación de archivos importables. <strong>Sistemas en la nube:</strong> APIs REST si existen.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Cómo funciona</div>
+      <div class="pb-value">Con los datos del CFDI ya clasificados (cuenta contable asignada por IA) + datos bancarios conciliados, se genera la póliza completa: fecha, concepto, cargos, abonos, referencia al UUID. La póliza se <strong>inserta directamente en el sistema contable</strong> o se genera un archivo de importación que el contador revisa y aplica con un click.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Dependencias</div>
+      <div class="pb-value"><strong>Este es el proceso más dependiente del sistema específico del despacho.</strong> Requiere: acceso al sistema contable (credenciales, permisos), documentación de la API/SDK, periodo de pruebas para validar que las pólizas se generan correctamente. Si el sistema es muy antiguo o cerrado, se opta por archivos de importación en lugar de inserción directa.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Riesgos</div>
+      <div class="pb-value"><strong>Alto.</strong> Errores en pólizas automáticas pueden ser difíciles de detectar si no se revisan. Mitigación obligatoria: flujo de aprobación donde el contador revisa y autoriza cada lote antes de aplicar. Nunca se aplica sin supervisión humana. Si el ERP no tiene API, la integración puede ser más cara y frágil.</div>
+    </div>
+  </div>
+
+  <div class="callout-warn callout reveal">
+    <div class="callout-title">⚠️ Nota sobre integración con ERPs</div>
+    <p>La complejidad y costo de esta automatización varía <strong>dramáticamente</strong> según el sistema contable. CONTPAQi tiene SDK maduro; Aspel permite acceso a base de datos; sistemas cloud modernos tienen APIs. Pero sistemas legacy o muy antiguos pueden requerir workarounds costosos. <strong>El diagnóstico inicial debe identificar el sistema exacto y evaluar viabilidad específica antes de cotizar.</strong></p>
+  </div>
+
+  <div class="process-block reveal">
+    <div class="pb-header">
+      <div class="pb-title">Generación automática de reportes financieros</div>
+      <div class="pb-tags">
+        <span class="tag-pill tag-auto">Automatización</span>
+        <span class="tag-pill tag-easy">Fácil</span>
+      </div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Tecnología</div>
+      <div class="pb-value">Templates en HTML/PDF con datos dinámicos. Librerías como Puppeteer (HTML→PDF), WeasyPrint, o LaTeX para reportes de alta calidad. Datos extraídos del sistema contable o de la base de datos propia.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Cómo funciona</div>
+      <div class="pb-value">Se definen templates para: estado de resultados, balance general, balanza de comprobación, flujo de efectivo, antigüedad de saldos. Con un click (o programado mensualmente), se jalan los datos, se generan los reportes con formato profesional (logo del despacho, diseño limpio), y se envían al cliente por email o se suben al portal.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Dependencias</div>
+      <div class="pb-value">Datos contables al día. Si la contabilidad tiene retrasos, los reportes reflejan información incompleta. Templates requieren diseño inicial (una vez).</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Riesgos</div>
+      <div class="pb-value">Bajo. Es una de las automatizaciones más straightforward y con mejor relación esfuerzo/impacto.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FISCAL -->
+<section>
+  <div class="section-header">🏛️ Fiscal y declaraciones</div>
+
+  <div class="process-block reveal">
+    <div class="pb-header">
+      <div class="pb-title">Cálculo de ISR/IVA y pre-llenado de declaraciones</div>
+      <div class="pb-tags">
+        <span class="tag-pill tag-auto">Automatización</span>
+        <span class="tag-pill tag-hard">Alta</span>
+      </div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Tecnología</div>
+      <div class="pb-value">Motor de cálculo fiscal programado con las tablas y tarifas vigentes del SAT (ISR Art. 96, 113-E RESICO, IVA Art. 5, etc.). Actualización manual o semi-automática cuando cambian las disposiciones fiscales.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Cómo funciona</div>
+      <div class="pb-value">Con la contabilidad al día, el sistema calcula automáticamente: base gravable, ISR causado, IVA acreditable/trasladado, retenciones. Genera un <strong>borrador de declaración</strong> en formato revisable. El contador valida los números, aplica criterios profesionales (deducciones opcionales, estímulos, etc.), y presenta. <strong>NO se presenta automáticamente — siempre revisión humana.</strong></div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Dependencias</div>
+      <div class="pb-value">Contabilidad completamente al día y correcta. Datos de periodos anteriores (pagos provisionales acumulados, saldos a favor, pérdidas por amortizar). Criterios del contador para deducciones opcionales. <strong>Cambios en disposiciones fiscales requieren actualización del motor.</strong></div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Riesgos</div>
+      <div class="pb-value"><strong>Alto.</strong> Un error en el cálculo fiscal tiene consecuencias legales y económicas reales (multas, recargos, auditorías). El motor debe ser exhaustivamente probado. Regímenes complejos (consolidación, IMMEX, sector primario) requieren lógica especializada adicional. <strong>Para la primera versión, se recomienda limitar a régimen general y RESICO personas físicas.</strong></div>
+    </div>
+  </div>
+
+  <div class="process-block reveal">
+    <div class="pb-header">
+      <div class="pb-title">Alertas de vencimientos fiscales</div>
+      <div class="pb-tags">
+        <span class="tag-pill tag-auto">Automatización</span>
+        <span class="tag-pill tag-easy">Fácil</span>
+      </div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Tecnología</div>
+      <div class="pb-value">Calendario fiscal programado + sistema de notificaciones (email, WhatsApp, push). Calendario base del SAT con fechas fijas y variables.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Cómo funciona</div>
+      <div class="pb-value">Calendario pre-cargado con todas las obligaciones por régimen fiscal. Por cada cliente se activan las que aplican. Notificaciones escalonadas: 7 días antes, 3 días antes, día del vencimiento. Incluye: declaraciones mensuales/anuales, DIOT, contabilidad electrónica, ajuste anual de ISR, PTU, etc.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Dependencias</div>
+      <div class="pb-value">Configurar correctamente el régimen y obligaciones de cada cliente al inicio.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Riesgos</div>
+      <div class="pb-value">Bajo. El mayor riesgo es no actualizar cuando el SAT modifica fechas (extensiones, reglas especiales). Se mitiga con monitoreo manual periódico.</div>
+    </div>
+  </div>
+
+  <div class="process-block reveal">
+    <div class="pb-header">
+      <div class="pb-title">Monitoreo de cambios fiscales con IA</div>
+      <div class="pb-tags">
+        <span class="tag-pill tag-ai">IA</span>
+        <span class="tag-pill tag-medium">Media</span>
+      </div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Tecnología</div>
+      <div class="pb-value">Web scraping del DOF (Diario Oficial de la Federación), portal del SAT, y fuentes fiscales relevantes. LLM para leer, resumir y clasificar por impacto.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Cómo funciona</div>
+      <div class="pb-value">Bot diario que revisa publicaciones del DOF, resoluciones del SAT, criterios normativos, y jurisprudencia fiscal relevante. La IA filtra lo que impacta a los clientes del despacho, genera resumen ejecutivo, y envía alerta al equipo con: qué cambió, a quién afecta, qué acción tomar.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Dependencias</div>
+      <div class="pb-value">Acceso web estable al DOF y portales del SAT. Validación humana obligatoria — la IA puede malinterpretar disposiciones legales complejas.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Riesgos</div>
+      <div class="pb-value">La IA puede generar falsos positivos (alertar sobre algo irrelevante) o falsos negativos (no detectar un cambio importante). <strong>Es herramienta de apoyo, no reemplazo del criterio fiscal del contador.</strong> Valor principal: velocidad — enterarse el mismo día en lugar de semanas después.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- NÓMINA -->
+<section>
+  <div class="section-header">👥 Nómina</div>
+
+  <div class="process-block reveal">
+    <div class="pb-header">
+      <div class="pb-title">Cálculo de nómina + timbrado + dispersión</div>
+      <div class="pb-tags">
+        <span class="tag-pill tag-auto">Automatización</span>
+        <span class="tag-pill tag-hard">Alta</span>
+      </div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Tecnología</div>
+      <div class="pb-value">Motor de cálculo con tablas ISR Art. 96, cuotas IMSS (Ley del Seguro Social), aportaciones Infonavit, UMA vigente. PAC para timbrado (SW Sapien, Facturapi, Finkok). Generador de layouts bancarios (cada banco tiene formato propio).</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Cómo funciona</div>
+      <div class="pb-value">Se configura plantilla por empresa: percepciones (sueldo, bono, horas extra, comisiones), deducciones (ISR, IMSS, Infonavit, préstamos, pensión alimenticia). Se capturan incidencias del periodo (faltas, incapacidades, extras). El sistema calcula neto a pagar, genera CFDI de nómina, timbra en lote, y genera archivo de dispersión para el banco.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Dependencias</div>
+      <div class="pb-value"><strong>Datos maestros de empleados completos y correctos:</strong> RFC, NSS, salario diario integrado, antigüedad, tipo de contrato, jornada. Información de incidencias del periodo. Integración con sistema de control de asistencia si existe. <strong>Tablas de ISR, IMSS, UMA actualizadas</strong> (cambian anualmente).</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Riesgos</div>
+      <div class="pb-value"><strong>Muy alto.</strong> Errores en nómina afectan directamente a trabajadores y generan problemas legales (LFT, IMSS, SAT). Requiere testing exhaustivo, validación con cálculos manuales paralelos durante al menos 2 periodos antes de confiar. <strong>Recomendación: usar como calculadora de apoyo los primeros meses, no como sistema único.</strong></div>
+    </div>
+  </div>
+
+  <div class="callout-red callout reveal">
+    <div class="callout-title">🔴 Riesgo importante: Nómina</div>
+    <p>La nómina mexicana es <strong>excepcionalmente compleja</strong> (ISR con subsidio al empleo, integración de salario IMSS, cuotas obrero-patronales, Infonavit con crédito en VSM/pesos/%, SUA, IDSE). Desarrollar un motor propio desde cero es factible pero requiere inversión significativa en validación. <strong>Alternativa recomendada:</strong> integrar con sistemas de nómina existentes (NOI, NOMIPAQ, Runa, Fortia) vía API, en lugar de replicar toda la lógica. Esto es más seguro y más rápido.</p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ATENCIÓN A CLIENTES -->
+<section>
+  <div class="section-header">📞 Atención a clientes</div>
+
+  <div class="process-block reveal">
+    <div class="pb-header">
+      <div class="pb-title">Agente de voz (teléfono)</div>
+      <div class="pb-tags">
+        <span class="tag-pill tag-agent">Agente IA</span>
+        <span class="tag-pill tag-medium">Media</span>
+      </div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Tecnología</div>
+      <div class="pb-value"><strong>Retell AI</strong> para orquestación de llamadas + LLM (GPT-4o/Claude) como cerebro + <strong>ElevenLabs</strong> para voz natural en español mexicano + <strong>Twilio</strong> para telefonía (número dedicado del despacho).</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Cómo funciona</div>
+      <div class="pb-value">El cliente llama al número del despacho. El agente contesta en <2 segundos con voz natural. Identifica al cliente (por número o nombre). Tiene acceso a su información: saldos, declaraciones presentadas, documentos pendientes, próximas fechas. Puede responder consultas, agendar citas, tomar recados. Si detecta algo que requiere juicio humano, transfiere la llamada al contador asignado.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Dependencias</div>
+      <div class="pb-value">Base de datos de clientes con información actualizada. Definir protocolos claros: qué puede responder el agente, qué escala. Número telefónico (Twilio ~$2 USD/mes + ~$0.02 USD/min). Entrenamiento del prompt con terminología fiscal mexicana.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Riesgos</div>
+      <div class="pb-value">El agente puede dar información incorrecta si la base de datos no está al día. Clientes que prefieren hablar con humanos pueden frustrarse. Mitigación: siempre ofrecer opción de transferir a humano. <strong>Nunca dar asesoría fiscal — solo información factual</strong> (montos, fechas, estatus).</div>
+    </div>
+  </div>
+
+  <div class="process-block reveal">
+    <div class="pb-header">
+      <div class="pb-title">Agente de WhatsApp</div>
+      <div class="pb-tags">
+        <span class="tag-pill tag-agent">Agente IA</span>
+        <span class="tag-pill tag-medium">Media</span>
+      </div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Tecnología</div>
+      <div class="pb-value"><strong>WhatsApp Business API</strong> (vía proveedor: Twilio, 360dialog, Gupshup) + LLM como cerebro + integración con base de datos del despacho. Puede recibir archivos (fotos, PDFs, audios).</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Cómo funciona</div>
+      <div class="pb-value">Mismo cerebro que el agente de voz pero por texto. Además puede: <strong>recibir documentos</strong> (el cliente manda foto de factura → OCR → clasificación automática), enviar recordatorios programados, mandar estados de cuenta, solicitar documentos faltantes con seguimiento automático ("Hola Juan, aún nos falta tu estado de cuenta de BBVA de enero. ¿Nos lo puedes mandar?").</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Dependencias</div>
+      <div class="pb-value">Cuenta de WhatsApp Business verificada. Aprobación de templates de mensajes por Meta (para mensajes proactivos). Número dedicado. Costo: ~$0.05-0.10 USD por conversación (modelo de precios de Meta).</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Riesgos</div>
+      <div class="pb-value">Meta puede cambiar políticas/precios sin aviso. Templates de mensajes proactivos requieren aprobación (1-2 días). WhatsApp tiene límites de mensajes para cuentas nuevas (se incrementan gradualmente). Clientes pueden confundir al agente con el contador y esperar asesoría personalizada.</div>
+    </div>
+  </div>
+
+  <div class="process-block reveal">
+    <div class="pb-header">
+      <div class="pb-title">Cobro automatizado de honorarios</div>
+      <div class="pb-tags">
+        <span class="tag-pill tag-auto">Automatización</span>
+        <span class="tag-pill tag-easy">Fácil</span>
+      </div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Tecnología</div>
+      <div class="pb-value">Sistema de facturación + recordatorios automáticos por WhatsApp/email + opcionalmente link de pago (Stripe, Mercado Pago, transferencia con referencia).</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Cómo funciona</div>
+      <div class="pb-value">Se configura por cliente: monto de honorarios, fecha de corte, método de pago preferido. El sistema envía: factura automática el día 1, recordatorio amable el día 5, segundo recordatorio el día 15, alerta de vencimiento el día 25. Si hay link de pago, el cliente puede pagar con un click. Se registra automáticamente el pago cuando se detecta en el banco.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Dependencias</div>
+      <div class="pb-value">Datos de facturación de cada cliente. CSD del despacho para timbrar. Definir política de cobro (tonos de los mensajes, escalamiento).</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Riesgos</div>
+      <div class="pb-value">Bajo. El mayor riesgo es un tono inadecuado en los mensajes que moleste al cliente. Se define el tono una vez y se valida con el contador antes de activar.</div>
+    </div>
+  </div>
+
+  <div class="process-block reveal">
+    <div class="pb-header">
+      <div class="pb-title">Onboarding digital de clientes nuevos</div>
+      <div class="pb-tags">
+        <span class="tag-pill tag-auto">Automatización</span>
+        <span class="tag-pill tag-easy">Fácil</span>
+      </div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Tecnología</div>
+      <div class="pb-value">Formulario web inteligente (Typeform-style o custom) con validación en tiempo real de RFC, subida de documentos, firma digital de contrato de servicios.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Cómo funciona</div>
+      <div class="pb-value">Se envía link al cliente nuevo. El formulario recopila: datos fiscales, RFC (se valida contra SAT), constancia de situación fiscal (upload), cuentas bancarias, datos de contacto, régimen fiscal, obligaciones. Al completar, se genera carpeta digital del cliente con todo organizado y listo para que el contador empiece a trabajar.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Dependencias</div>
+      <div class="pb-value">Definir exactamente qué datos se necesitan por tipo de cliente (PF, PM, RESICO, etc.).</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Riesgos</div>
+      <div class="pb-value">Bajo. Clientes no tech-savvy pueden necesitar ayuda para completar el formulario — se resuelve con instrucciones claras y soporte por WhatsApp.</div>
+    </div>
+  </div>
+
+  <div class="process-block reveal">
+    <div class="pb-header">
+      <div class="pb-title">Portal web de clientes</div>
+      <div class="pb-tags">
+        <span class="tag-pill tag-auto">Desarrollo</span>
+        <span class="tag-pill tag-hard">Alta</span>
+      </div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Tecnología</div>
+      <div class="pb-value">Aplicación web con autenticación (Next.js, React + backend). Dashboard personalizado por cliente con: estatus de obligaciones, documentos, facturas, pagos, chat con el despacho.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Cómo funciona</div>
+      <div class="pb-value">Cada cliente tiene acceso con usuario/contraseña. Ve: sus declaraciones presentadas, documentos pendientes, estados financieros, facturas del despacho, liga de pago. Puede subir documentos, hacer preguntas, y ver historial completo. El despacho ve: dashboard de todos los clientes, estatus de cada uno, productividad del equipo.</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Dependencias</div>
+      <div class="pb-value">Dominio web, hosting, SSL. Diseño y branding del despacho. Datos sincronizados del sistema contable. Mantenimiento continuo (actualizaciones, seguridad).</div>
+    </div>
+    <div class="pb-row">
+      <div class="pb-label">Riesgos</div>
+      <div class="pb-value"><strong>Es un desarrollo de software completo</strong> — no una automatización simple. Requiere mantenimiento ongoing, actualizaciones de seguridad, hosting confiable. Es la pieza más cara y compleja de todo el paquete. <strong>Alternativa más ligera:</strong> usar plataforma existente (Notion, Google Sites, o CRM como HubSpot) con acceso por cliente.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- RESUMEN -->
+<section>
+  <div class="section-header">📋 Resumen de factibilidad</div>
+
+  <table class="summary-table reveal">
+    <thead>
+      <tr>
+        <th>Proceso</th>
+        <th>Complejidad</th>
+        <th>Tiempo est.</th>
+        <th>Riesgo</th>
+        <th>Dependencia crítica</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Descarga CFDI</td>
+        <td><span class="tag-pill tag-easy">Fácil</span></td>
+        <td>3-5 días</td>
+        <td>Bajo</td>
+        <td>FIEL/CSD de cada cliente</td>
+      </tr>
+      <tr>
+        <td>Clasificación con IA</td>
+        <td><span class="tag-pill tag-medium">Media</span></td>
+        <td>2-3 semanas</td>
+        <td>Medio</td>
+        <td>Datos históricos de clasificación</td>
+      </tr>
+      <tr>
+        <td>Validación CFDI</td>
+        <td><span class="tag-pill tag-easy">Fácil</span></td>
+        <td>2-3 días</td>
+        <td>Bajo</td>
+        <td>Ninguna especial</td>
+      </tr>
+      <tr>
+        <td>OCR documentos</td>
+        <td><span class="tag-pill tag-medium">Media</span></td>
+        <td>1-2 semanas</td>
+        <td>Medio</td>
+        <td>Calidad de documentos</td>
+      </tr>
+      <tr>
+        <td>Conciliaciones bancarias</td>
+        <td><span class="tag-pill tag-medium">Media</span></td>
+        <td>2-3 semanas</td>
+        <td>Medio</td>
+        <td>Formato de estados de cuenta</td>
+      </tr>
+      <tr>
+        <td>Registro de pólizas</td>
+        <td><span class="tag-pill tag-hard">Alta</span></td>
+        <td>3-5 semanas</td>
+        <td>Alto</td>
+        <td>API/SDK del ERP</td>
+      </tr>
+      <tr>
+        <td>Reportes financieros</td>
+        <td><span class="tag-pill tag-easy">Fácil</span></td>
+        <td>1-2 semanas</td>
+        <td>Bajo</td>
+        <td>Datos contables al día</td>
+      </tr>
+      <tr>
+        <td>Cálculo ISR/IVA + declaraciones</td>
+        <td><span class="tag-pill tag-hard">Alta</span></td>
+        <td>4-6 semanas</td>
+        <td>Alto</td>
+        <td>Disposiciones fiscales vigentes</td>
+      </tr>
+      <tr>
+        <td>Alertas de vencimientos</td>
+        <td><span class="tag-pill tag-easy">Fácil</span></td>
+        <td>3-5 días</td>
+        <td>Bajo</td>
+        <td>Régimen fiscal por cliente</td>
+      </tr>
+      <tr>
+        <td>Monitor cambios fiscales</td>
+        <td><span class="tag-pill tag-medium">Media</span></td>
+        <td>1-2 semanas</td>
+        <td>Medio</td>
+        <td>Validación humana</td>
+      </tr>
+      <tr>
+        <td>Nómina completa</td>
+        <td><span class="tag-pill tag-hard">Alta</span></td>
+        <td>6-10 semanas</td>
+        <td>Muy alto</td>
+        <td>Testing exhaustivo</td>
+      </tr>
+      <tr>
+        <td>Agente de voz</td>
+        <td><span class="tag-pill tag-medium">Media</span></td>
+        <td>2-3 semanas</td>
+        <td>Medio</td>
+        <td>Base de datos actualizada</td>
+      </tr>
+      <tr>
+        <td>Agente WhatsApp</td>
+        <td><span class="tag-pill tag-medium">Media</span></td>
+        <td>2-3 semanas</td>
+        <td>Medio</td>
+        <td>WhatsApp Business API</td>
+      </tr>
+      <tr>
+        <td>Cobro de honorarios</td>
+        <td><span class="tag-pill tag-easy">Fácil</span></td>
+        <td>1 semana</td>
+        <td>Bajo</td>
+        <td>CSD del despacho</td>
+      </tr>
+      <tr>
+        <td>Onboarding digital</td>
+        <td><span class="tag-pill tag-easy">Fácil</span></td>
+        <td>1 semana</td>
+        <td>Bajo</td>
+        <td>Definición de datos requeridos</td>
+      </tr>
+      <tr>
+        <td>Portal de clientes</td>
+        <td><span class="tag-pill tag-hard">Alta</span></td>
+        <td>6-10 semanas</td>
+        <td>Medio</td>
+        <td>Desarrollo + mantenimiento</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout reveal">
+    <div class="callout-title">Conclusión de factibilidad</div>
+    <p><strong>12 de 16 procesos</strong> son factibles con complejidad baja a media y se pueden implementar en 4-8 semanas. Los 4 procesos de complejidad alta (registro de pólizas, cálculo fiscal, nómina, portal de clientes) son factibles pero requieren más tiempo, testing riguroso, y en algunos casos se recomienda integrar con sistemas existentes en lugar de construir desde cero. <strong>Ningún proceso es imposible — pero la honestidad sobre riesgos y limitaciones es lo que separa una implementación exitosa de una que causa problemas.</strong></p>
+  </div>
+</section>
+
+<footer>
+  ANEXO TÉCNICO · CONFIDENCIAL · RAUL ZHOU · 2025
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
