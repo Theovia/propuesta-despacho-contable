@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transformación Digital para Despachos Contables — Raul Zhou</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@400;700&family=Young+Serif&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  :root {
+    --navy: #0a1628;
+    --dark: #111827;
+    --slate: #1e293b;
+    --mid: #334155;
+    --accent: #10b981;
+    --accent2: #34d399;
+    --accent-glow: #059669;
+    --accent-dim: rgba(16,185,129,0.08);
+    --accent-border: rgba(16,185,129,0.15);
+    --white: #f8fafc;
+    --gray: #94a3b8;
+    --red: #ef4444;
+    --green: #22c55e;
+    --amber: #f59e0b;
+    --blue: #3b82f6;
+    --purple: #a855f7;
+    --cyan: #06b6d4;
+  }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'Work Sans', system-ui, sans-serif;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  .deck { width: 100%; height: 100%; position: relative; }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(24px, 5vh, 80px) clamp(24px, 6vw, 100px);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    overflow-y: auto;
+  }
+  .slide.active { display: flex; opacity: 1; }
+
+  /* COVER */
+  .slide-cover {
+    background: linear-gradient(135deg, #0a1628 0%, #0f2922 40%, #0f172a 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .slide-cover::before {
+    content: '';
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 800px; height: 800px;
+    background: radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .slide-cover::after {
+    content: '';
+    position: absolute;
+    bottom: -100px; left: -100px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(16,185,129,0.05) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .cover-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+  .cover-title {
+    font-family: 'Young Serif', serif;
+    font-size: clamp(36px, 6vw, 72px);
+    line-height: 1.05;
+    color: var(--white);
+    margin-bottom: 24px;
+    max-width: 800px;
+  }
+  .cover-subtitle {
+    font-size: clamp(16px, 2vw, 22px);
+    color: var(--gray);
+    max-width: 600px;
+    line-height: 1.6;
+    margin-bottom: 60px;
+  }
+  .cover-meta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--mid);
+    letter-spacing: 2px;
+  }
+  .cover-line {
+    width: 60px;
+    height: 3px;
+    background: var(--accent);
+    margin-bottom: 40px;
+  }
+
+  /* COMMON */
+  .slide-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .slide-title {
+    font-family: 'Young Serif', serif;
+    font-size: clamp(26px, 4vw, 44px);
+    line-height: 1.15;
+    margin-bottom: 32px;
+    color: var(--white);
+  }
+  .slide-body {
+    font-size: 17px;
+    line-height: 1.8;
+    color: var(--gray);
+    max-width: 900px;
+  }
+
+  /* GRIDS */
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 20px; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; margin-top: 20px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 20px; }
+
+  .card {
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid rgba(16, 185, 129, 0.08);
+    border-radius: 14px;
+    padding: 28px 24px;
+    position: relative;
+    transition: border-color 0.3s;
+  }
+  .card:hover { border-color: var(--accent-border); }
+  .card-icon {
+    font-size: 28px;
+    margin-bottom: 14px;
+    display: block;
+  }
+  .card-number {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 40px;
+    font-weight: 700;
+    color: rgba(16, 185, 129, 0.12);
+    position: absolute;
+    top: 16px;
+    right: 20px;
+  }
+  .card-title {
+    font-family: 'Young Serif', serif;
+    font-size: 19px;
+    color: var(--white);
+    margin-bottom: 10px;
+  }
+  .card-body {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--gray);
+  }
+  .card-detail {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--accent2);
+    margin-top: 14px;
+  }
+
+  /* STATS */
+  .stat-row { display: flex; gap: 48px; margin: 32px 0; flex-wrap: wrap; }
+  .stat-number {
+    font-family: 'Young Serif', serif;
+    font-size: clamp(36px, 5vw, 56px);
+    color: var(--accent);
+    line-height: 1;
+  }
+  .stat-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--gray);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+
+  /* TABLE */
+  .clean-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+  .clean-table th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-align: left;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--mid);
+  }
+  .clean-table td {
+    font-size: 14px;
+    color: var(--gray);
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(51, 65, 85, 0.3);
+  }
+  .clean-table td:first-child { color: var(--white); font-weight: 600; }
+  .clean-table tr:hover td { background: rgba(16,185,129,0.03); }
+
+  /* TAGS */
+  .tag-pill {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .tag-auto { background: rgba(16,185,129,0.15); color: var(--accent2); }
+  .tag-ai { background: rgba(168,85,247,0.15); color: var(--purple); }
+  .tag-agent { background: rgba(6,182,212,0.15); color: var(--cyan); }
+  .tag-quick { background: rgba(59,130,246,0.15); color: var(--blue); }
+  .tag-high { background: rgba(239,68,68,0.15); color: var(--red); }
+  .tag-med { background: rgba(251,191,36,0.15); color: var(--amber); }
+
+  /* FLOW */
+  .flow { display: flex; align-items: stretch; gap: 16px; margin-top: 24px; flex-wrap: wrap; }
+  .flow-step {
+    flex: 1;
+    min-width: 160px;
+    background: rgba(30, 41, 59, 0.4);
+    border: 1px solid rgba(16, 185, 129, 0.08);
+    border-radius: 12px;
+    padding: 24px 20px;
+    position: relative;
+  }
+  .flow-step::after {
+    content: '→';
+    position: absolute;
+    right: -12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--mid);
+    font-size: 18px;
+    z-index: 1;
+  }
+  .flow-step:last-child::after { display: none; }
+  .flow-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+  .flow-label {
+    font-family: 'Young Serif', serif;
+    font-size: 16px;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+  .flow-desc {
+    font-size: 12px;
+    color: var(--gray);
+    line-height: 1.5;
+  }
+
+  /* HIGHLIGHT */
+  .highlight-box {
+    background: linear-gradient(135deg, var(--accent-dim), rgba(16,185,129,0.03));
+    border: 1px solid var(--accent-border);
+    border-radius: 14px;
+    padding: 28px 32px;
+    margin-top: 28px;
+  }
+  .highlight-box .hb-title {
+    font-family: 'Young Serif', serif;
+    font-size: 18px;
+    color: var(--accent2);
+    margin-bottom: 10px;
+  }
+  .highlight-box .hb-body {
+    font-size: 15px;
+    color: var(--gray);
+    line-height: 1.7;
+  }
+
+  /* LISTS */
+  .clean-list { list-style: none; padding: 0; }
+  .clean-list li {
+    font-size: 15px;
+    color: var(--gray);
+    padding: 8px 0 8px 22px;
+    position: relative;
+    line-height: 1.5;
+  }
+  .clean-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 14px;
+    width: 7px;
+    height: 7px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  /* COMPARE */
+  .compare-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 20px; }
+  .compare-col { border-radius: 14px; padding: 28px 24px; }
+  .compare-col.bad { background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.12); }
+  .compare-col.good { background: rgba(16,185,129,0.05); border: 1px solid rgba(16,185,129,0.12); }
+  .compare-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .compare-col.bad .compare-label { color: var(--red); }
+  .compare-col.good .compare-label { color: var(--accent); }
+  .compare-item { font-size: 14px; color: var(--gray); padding: 6px 0; line-height: 1.5; }
+
+  /* PRICE */
+  .price-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }
+  .price-card {
+    background: rgba(30, 41, 59, 0.4);
+    border: 1px solid rgba(16,185,129,0.08);
+    border-radius: 14px;
+    padding: 28px 24px;
+    text-align: center;
+  }
+  .price-card.featured {
+    border-color: rgba(16,185,129,0.3);
+    background: rgba(16,185,129,0.05);
+  }
+  .price-card-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .price-card-name {
+    font-family: 'Young Serif', serif;
+    font-size: 22px;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+  .price-card-time {
+    font-size: 13px;
+    color: var(--gray);
+    margin-bottom: 18px;
+  }
+  .price-card-price {
+    font-family: 'Young Serif', serif;
+    font-size: 28px;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .price-card-unit {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--gray);
+    margin-bottom: 18px;
+  }
+  .price-card-list { list-style: none; padding: 0; text-align: left; }
+  .price-card-list li {
+    font-size: 13px;
+    color: var(--gray);
+    padding: 5px 0 5px 18px;
+    position: relative;
+    line-height: 1.4;
+  }
+  .price-card-list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--green);
+    font-size: 11px;
+  }
+
+  /* TIMELINE */
+  .timeline { margin-top: 24px; position: relative; padding-left: 36px; }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--accent), transparent);
+  }
+  .tl-item { position: relative; margin-bottom: 24px; }
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: -30px;
+    top: 6px;
+    width: 10px;
+    height: 10px;
+    background: var(--accent);
+    border-radius: 50%;
+    border: 2px solid var(--navy);
+  }
+  .tl-week {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+  .tl-title { font-size: 16px; color: var(--white); font-weight: 600; margin-bottom: 4px; }
+  .tl-desc { font-size: 13px; color: var(--gray); line-height: 1.5; }
+
+  /* PROCESS ROW */
+  .process-row {
+    display: grid;
+    grid-template-columns: 200px 1fr 120px 100px;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(51,65,85,0.3);
+    align-items: center;
+  }
+  .process-row:first-child { border-top: 1px solid var(--mid); }
+  .process-row .pr-name { color: var(--white); font-weight: 600; font-size: 14px; }
+  .process-row .pr-desc { color: var(--gray); font-size: 13px; line-height: 1.4; }
+  .process-row .pr-tech { text-align: center; }
+  .process-row .pr-impact { text-align: center; }
+
+  /* SECTION SUBTITLE */
+  .section-sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin: 28px 0 12px;
+  }
+
+  /* NAV */
+  .nav {
+    position: fixed;
+    bottom: 28px;
+    right: 36px;
+    display: flex;
+    gap: 10px;
+    z-index: 100;
+  }
+  .nav button {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--mid);
+    background: rgba(30, 41, 59, 0.8);
+    color: var(--white);
+    font-size: 16px;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: all 0.2s;
+  }
+  .nav button:hover { border-color: var(--accent); background: rgba(16,185,129,0.1); }
+  .slide-counter {
+    position: fixed;
+    bottom: 36px;
+    left: 36px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--mid);
+    letter-spacing: 2px;
+    z-index: 100;
+  }
+
+  /* TABLET */
+  @media (max-width: 1024px) {
+    .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .process-row { grid-template-columns: 160px 1fr 100px 80px; gap: 8px; padding: 10px 12px; }
+    .process-row .pr-name { font-size: 13px; }
+    .process-row .pr-desc { font-size: 12px; }
+    .card { padding: 22px 18px; }
+    .card-body { font-size: 13px; }
+    .price-card { padding: 22px 18px; }
+    .clean-table td { font-size: 13px; padding: 10px 12px; }
+  }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    .slide { padding: 20px 16px; overflow-y: auto; }
+    .grid-3, .grid-2, .grid-4, .compare-cols, .price-cards { grid-template-columns: 1fr; gap: 12px; }
+    .stat-row { flex-direction: column; gap: 16px; }
+    .stat-number { font-size: 32px; }
+    .flow { flex-direction: column; gap: 8px; }
+    .flow-step::after { display: none; }
+    .flow-step { padding: 16px 14px; }
+    .card { padding: 18px 14px; }
+    .highlight-box { padding: 18px; }
+    .highlight-box .hb-body { font-size: 13px; }
+    .process-row { grid-template-columns: 1fr; gap: 4px; padding: 12px 0; }
+    .process-row .pr-tech, .process-row .pr-impact { text-align: left; }
+    .clean-table th { font-size: 9px; padding: 6px 8px; }
+    .clean-table td { font-size: 11px; padding: 8px; }
+    .compare-col { padding: 16px 14px; }
+    .nav { bottom: 12px; right: 12px; }
+    .nav button { width: 36px; height: 36px; font-size: 14px; }
+    .slide-counter { bottom: 18px; left: 16px; font-size: 10px; }
+    .cover-subtitle { max-width: 100%; }
+    .clean-list li { font-size: 13px; }
+    .price-card-name { font-size: 18px; }
+    .price-card-price { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="deck">
+
+  <!-- SLIDE 1: COVER -->
+  <div class="slide slide-cover active" data-slide="1">
+    <div class="cover-tag">Propuesta de servicios</div>
+    <div class="cover-line"></div>
+    <h1 class="cover-title">Transformación Digital<br>para Despachos Contables</h1>
+    <p class="cover-subtitle">Automatización de procesos, inteligencia artificial y agentes inteligentes para multiplicar la capacidad operativa de tu despacho sin multiplicar el personal.</p>
+    <p class="cover-meta">CONFIDENCIAL · RAUL ZHOU · 2025</p>
+  </div>
+
+  <!-- SLIDE 2: EL PROBLEMA -->
+  <div class="slide" data-slide="2" style="background: linear-gradient(180deg, #0a1628 0%, #0f172a 100%);">
+    <div class="slide-tag">La realidad</div>
+    <h2 class="slide-title">El despacho contable promedio<br>opera como en 2010</h2>
+    
+    <div class="stat-row">
+      <div>
+        <div class="stat-number">70%</div>
+        <div class="stat-label">Del tiempo se va en<br>tareas repetitivas</div>
+      </div>
+      <div>
+        <div class="stat-number">15+</div>
+        <div class="stat-label">Horas/semana en captura<br>manual de datos</div>
+      </div>
+      <div>
+        <div class="stat-number">40%</div>
+        <div class="stat-label">De errores vienen de<br>re-captura humana</div>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <div class="hb-title">El cuello de botella no es tu gente — es el proceso</div>
+      <div class="hb-body">Cada cliente nuevo significa más captura, más conciliaciones, más declaraciones, más WhatsApps. El modelo actual escala linealmente: más clientes = más gente. Con automatización e IA, puedes atender 3x más clientes con el mismo equipo — y con menos errores.</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: QUÉ PROPONEMOS -->
+  <div class="slide" data-slide="3" style="background: linear-gradient(180deg, #0a1628 0%, #0f172a 100%);">
+    <div class="slide-tag">La propuesta</div>
+    <h2 class="slide-title">Tres capas de transformación</h2>
+
+    <div class="grid-3">
+      <div class="card">
+        <span class="card-icon">⚡</span>
+        <div class="card-title">Automatización</div>
+        <div class="card-body">Eliminar tareas manuales repetitivas. Lo que hoy toma horas, toma minutos. Conciliaciones, clasificación, captura, validaciones.</div>
+        <div class="card-detail">IMPACTO: -60% tiempo operativo</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🧠</span>
+        <div class="card-title">Inteligencia Artificial</div>
+        <div class="card-body">IA que lee documentos, clasifica gastos, detecta anomalías, sugiere cuentas contables, y aprende de tus correcciones.</div>
+        <div class="card-detail">IMPACTO: -80% errores de clasificación</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🤖</span>
+        <div class="card-title">Agentes Inteligentes</div>
+        <div class="card-body">Asistentes de IA que atienden clientes, responden dudas fiscales, mandan recordatorios, y gestionan documentos — 24/7.</div>
+        <div class="card-detail">IMPACTO: -70% carga de atención</div>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <div class="hb-body">No es reemplazar gente. Es liberar a tu equipo de lo mecánico para que hagan lo que realmente importa: <strong style="color:var(--white);">asesorar, analizar, y generar valor</strong> para tus clientes.</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: MAPA DE PROCESOS -->
+  <div class="slide" data-slide="4" style="background: linear-gradient(180deg, #0a1628 0%, #0f172a 100%);">
+    <div class="slide-tag">Diagnóstico</div>
+    <h2 class="slide-title">Todos los procesos de un despacho — y qué se puede automatizar</h2>
+
+    <div class="section-sub">📥 Ingreso y clasificación de información</div>
+    <div class="process-row">
+      <div class="pr-name">Recepción de documentos</div>
+      <div class="pr-desc">Facturas, estados de cuenta, recibos, contratos que llegan por email, WhatsApp, o USB</div>
+      <div class="pr-tech"><span class="tag-pill tag-ai">IA + OCR</span></div>
+      <div class="pr-impact"><span class="tag-pill tag-high">Alto</span></div>
+    </div>
+    <div class="process-row">
+      <div class="pr-name">Descarga de CFDI del SAT</div>
+      <div class="pr-desc">Descarga masiva de XML emitidos y recibidos por cada cliente, cada mes</div>
+      <div class="pr-tech"><span class="tag-pill tag-auto">Auto</span></div>
+      <div class="pr-impact"><span class="tag-pill tag-high">Alto</span></div>
+    </div>
+    <div class="process-row">
+      <div class="pr-name">Clasificación de gastos</div>
+      <div class="pr-desc">Asignar cuenta contable a cada factura recibida según concepto, proveedor, cliente</div>
+      <div class="pr-tech"><span class="tag-pill tag-ai">IA</span></div>
+      <div class="pr-impact"><span class="tag-pill tag-high">Alto</span></div>
+    </div>
+    <div class="process-row">
+      <div class="pr-name">Validación de CFDI</div>
+      <div class="pr-desc">Verificar estatus ante el SAT (vigente, cancelado), vigencia del CSD, integridad del XML</div>
+      <div class="pr-tech"><span class="tag-pill tag-auto">Auto</span></div>
+      <div class="pr-impact"><span class="tag-pill tag-med">Medio</span></div>
+    </div>
+
+    <div class="section-sub">📊 Contabilidad</div>
+    <div class="process-row">
+      <div class="pr-name">Registro de pólizas</div>
+      <div class="pr-desc">Captura de pólizas de ingreso, egreso, diario — desde XML y estados de cuenta</div>
+      <div class="pr-tech"><span class="tag-pill tag-auto">Auto</span></div>
+      <div class="pr-impact"><span class="tag-pill tag-high">Alto</span></div>
+    </div>
+    <div class="process-row">
+      <div class="pr-name">Conciliaciones bancarias</div>
+      <div class="pr-desc">Cruce automático banco ↔ contabilidad ↔ facturación — identificar diferencias</div>
+      <div class="pr-tech"><span class="tag-pill tag-auto">Auto</span></div>
+      <div class="pr-impact"><span class="tag-pill tag-high">Alto</span></div>
+    </div>
+    <div class="process-row">
+      <div class="pr-name">Conciliación CFDI ↔ contabilidad</div>
+      <div class="pr-desc">Que cada factura tenga su póliza y cada póliza su factura — sin huecos</div>
+      <div class="pr-tech"><span class="tag-pill tag-auto">Auto</span></div>
+      <div class="pr-impact"><span class="tag-pill tag-high">Alto</span></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: MAPA DE PROCESOS (cont.) -->
+  <div class="slide" data-slide="5" style="background: linear-gradient(180deg, #0a1628 0%, #0f172a 100%);">
+    <div class="slide-tag">Diagnóstico (continuación)</div>
+    <h2 class="slide-title">Procesos automatizables</h2>
+
+    <div class="section-sub">🏛️ Fiscal y declaraciones</div>
+    <div class="process-row">
+      <div class="pr-name">Cálculo de ISR / IVA</div>
+      <div class="pr-desc">Determinación de impuestos mensuales y anuales con base en la contabilidad registrada</div>
+      <div class="pr-tech"><span class="tag-pill tag-auto">Auto</span></div>
+      <div class="pr-impact"><span class="tag-pill tag-high">Alto</span></div>
+    </div>
+    <div class="process-row">
+      <div class="pr-name">Pre-llenado de declaraciones</div>
+      <div class="pr-desc">Generar borradores de declaraciones mensuales/anuales listos para revisión</div>
+      <div class="pr-tech"><span class="tag-pill tag-auto">Auto</span></div>
+      <div class="pr-impact"><span class="tag-pill tag-high">Alto</span></div>
+    </div>
+    <div class="process-row">
+      <div class="pr-name">Alertas de vencimiento</div>
+      <div class="pr-desc">Recordatorios automáticos de fechas límite: declaraciones, DIOT, contabilidad electrónica</div>
+      <div class="pr-tech"><span class="tag-pill tag-auto">Auto</span></div>
+      <div class="pr-impact"><span class="tag-pill tag-med">Medio</span></div>
+    </div>
+    <div class="process-row">
+      <div class="pr-name">Monitoreo de cambios fiscales</div>
+      <div class="pr-desc">IA que lee el DOF, miscelánea fiscal, criterios SAT y alerta sobre impactos relevantes</div>
+      <div class="pr-tech"><span class="tag-pill tag-ai">IA</span></div>
+      <div class="pr-impact"><span class="tag-pill tag-med">Medio</span></div>
+    </div>
+
+    <div class="section-sub">👥 Nómina</div>
+    <div class="process-row">
+      <div class="pr-name">Cálculo de nómina</div>
+      <div class="pr-desc">Percepciones, deducciones, ISR, IMSS, Infonavit — quincenal/mensual</div>
+      <div class="pr-tech"><span class="tag-pill tag-auto">Auto</span></div>
+      <div class="pr-impact"><span class="tag-pill tag-high">Alto</span></div>
+    </div>
+    <div class="process-row">
+      <div class="pr-name">Timbrado de recibos</div>
+      <div class="pr-desc">Generación y timbrado masivo de CFDI de nómina ante PAC</div>
+      <div class="pr-tech"><span class="tag-pill tag-auto">Auto</span></div>
+      <div class="pr-impact"><span class="tag-pill tag-high">Alto</span></div>
+    </div>
+    <div class="process-row">
+      <div class="pr-name">Dispersión bancaria</div>
+      <div class="pr-desc">Generar layout de pago para bancos — un click para dispersar toda la nómina</div>
+      <div class="pr-tech"><span class="tag-pill tag-auto">Auto</span></div>
+      <div class="pr-impact"><span class="tag-pill tag-med">Medio</span></div>
+    </div>
+    <div class="process-row">
+      <div class="pr-name">Movimientos IMSS/Infonavit</div>
+      <div class="pr-desc">Altas, bajas, modificaciones salariales — generación de archivos SUA</div>
+      <div class="pr-tech"><span class="tag-pill tag-auto">Auto</span></div>
+      <div class="pr-impact"><span class="tag-pill tag-med">Medio</span></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: MAPA DE PROCESOS (cont.) -->
+  <div class="slide" data-slide="6" style="background: linear-gradient(180deg, #0a1628 0%, #0f172a 100%);">
+    <div class="slide-tag">Diagnóstico (continuación)</div>
+    <h2 class="slide-title">Procesos automatizables</h2>
+
+    <div class="section-sub">📞 Atención a clientes</div>
+    <div class="process-row">
+      <div class="pr-name">Consultas frecuentes</div>
+      <div class="pr-desc">"¿Cuánto debo pagar de impuestos?", "¿Ya se presentó mi declaración?", "¿Cuánto me queda de saldo?"</div>
+      <div class="pr-tech"><span class="tag-pill tag-agent">Agente IA</span></div>
+      <div class="pr-impact"><span class="tag-pill tag-high">Alto</span></div>
+    </div>
+    <div class="process-row">
+      <div class="pr-name">Solicitud de documentos</div>
+      <div class="pr-desc">Pedirle al cliente facturas, estados de cuenta, información faltante — con seguimiento automático</div>
+      <div class="pr-tech"><span class="tag-pill tag-agent">Agente IA</span></div>
+      <div class="pr-impact"><span class="tag-pill tag-high">Alto</span></div>
+    </div>
+    <div class="process-row">
+      <div class="pr-name">Recordatorios de pago</div>
+      <div class="pr-desc">Cobro de honorarios: avisos automáticos antes y después del vencimiento</div>
+      <div class="pr-tech"><span class="tag-pill tag-auto">Auto</span></div>
+      <div class="pr-impact"><span class="tag-pill tag-med">Medio</span></div>
+    </div>
+    <div class="process-row">
+      <div class="pr-name">Onboarding de clientes nuevos</div>
+      <div class="pr-desc">Recopilar datos fiscales, RFC, constancia, cuentas bancarias — formulario inteligente</div>
+      <div class="pr-tech"><span class="tag-pill tag-agent">Agente IA</span></div>
+      <div class="pr-impact"><span class="tag-pill tag-med">Medio</span></div>
+    </div>
+
+    <div class="section-sub">📁 Gestión documental</div>
+    <div class="process-row">
+      <div class="pr-name">Organización de archivos</div>
+      <div class="pr-desc">Clasificar automáticamente por cliente, periodo, tipo de documento</div>
+      <div class="pr-tech"><span class="tag-pill tag-ai">IA</span></div>
+      <div class="pr-impact"><span class="tag-pill tag-med">Medio</span></div>
+    </div>
+    <div class="process-row">
+      <div class="pr-name">Búsqueda inteligente</div>
+      <div class="pr-desc">"Busca la factura de Proveedor X de marzo 2024" — búsqueda por lenguaje natural</div>
+      <div class="pr-tech"><span class="tag-pill tag-ai">IA</span></div>
+      <div class="pr-impact"><span class="tag-pill tag-med">Medio</span></div>
+    </div>
+    <div class="process-row">
+      <div class="pr-name">Reportes para clientes</div>
+      <div class="pr-desc">Estados financieros, balanzas, reportes fiscales — generación automática con formato profesional</div>
+      <div class="pr-tech"><span class="tag-pill tag-auto">Auto</span></div>
+      <div class="pr-impact"><span class="tag-pill tag-high">Alto</span></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: AGENTE DE VOZ -->
+  <div class="slide" data-slide="7" style="background: linear-gradient(180deg, #0a1628 0%, #0f172a 100%);">
+    <div class="slide-tag">Capacidad estrella</div>
+    <h2 class="slide-title">Agente de voz con IA:<br>tu recepcionista digital 24/7</h2>
+
+    <div class="grid-2">
+      <div>
+        <p class="slide-body" style="font-size:15px; margin-bottom:20px;">Un agente telefónico con inteligencia artificial que atiende llamadas de tus clientes, responde preguntas frecuentes, agenda citas, solicita documentos, y escala al equipo humano solo cuando es necesario.</p>
+        
+        <div class="section-sub" style="margin-top:16px;">¿Qué puede hacer?</div>
+        <ul class="clean-list">
+          <li>Contestar "¿Ya se presentó mi declaración?"</li>
+          <li>Informar montos a pagar y fechas límite</li>
+          <li>Pedir documentos faltantes con seguimiento</li>
+          <li>Agendar citas con el contador</li>
+          <li>Recordar pagos de honorarios pendientes</li>
+          <li>Dar estatus de trámites en curso</li>
+          <li>Escalar a humano cuando detecta algo complejo</li>
+        </ul>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:16px;">
+          <span class="card-icon">📱</span>
+          <div class="card-title">Por teléfono</div>
+          <div class="card-body">Número dedicado del despacho. Contesta en segundos, voz natural en español, entiende contexto del cliente.</div>
+        </div>
+        <div class="card" style="margin-bottom:16px;">
+          <span class="card-icon">💬</span>
+          <div class="card-title">Por WhatsApp</div>
+          <div class="card-body">Mismo agente, mismo cerebro. Recibe documentos, envía recordatorios, responde consultas por texto o audio.</div>
+        </div>
+        <div class="card">
+          <span class="card-icon">🔗</span>
+          <div class="card-title">Conectado a tu sistema</div>
+          <div class="card-body">Acceso a la información real de cada cliente: saldos, declaraciones, documentos pendientes, citas.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: ANTES Y DESPUÉS -->
+  <div class="slide" data-slide="8" style="background: linear-gradient(180deg, #0a1628 0%, #0f172a 100%);">
+    <div class="slide-tag">Comparativa</div>
+    <h2 class="slide-title">Un día en el despacho:<br>antes vs. después</h2>
+
+    <table class="clean-table">
+      <thead>
+        <tr>
+          <th>Actividad</th>
+          <th>Hoy (manual)</th>
+          <th>Con automatización</th>
+          <th>Ahorro</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Descargar CFDI de 20 clientes</td>
+          <td>2-3 horas</td>
+          <td style="color:var(--accent)">Automático (programado)</td>
+          <td style="color:var(--accent)">100%</td>
+        </tr>
+        <tr>
+          <td>Clasificar 200 facturas</td>
+          <td>4-5 horas</td>
+          <td style="color:var(--accent)">15 min (IA + revisión)</td>
+          <td style="color:var(--accent)">95%</td>
+        </tr>
+        <tr>
+          <td>Conciliación bancaria (1 cliente)</td>
+          <td>1-2 horas</td>
+          <td style="color:var(--accent)">5 min (automático)</td>
+          <td style="color:var(--accent)">90%</td>
+        </tr>
+        <tr>
+          <td>Responder 15 WhatsApps de clientes</td>
+          <td>1 hora (interrupciones)</td>
+          <td style="color:var(--accent)">0 min (agente IA)</td>
+          <td style="color:var(--accent)">100%</td>
+        </tr>
+        <tr>
+          <td>Preparar declaración mensual</td>
+          <td>2-3 horas</td>
+          <td style="color:var(--accent)">20 min (pre-llenado)</td>
+          <td style="color:var(--accent)">85%</td>
+        </tr>
+        <tr>
+          <td>Generar reportes para 5 clientes</td>
+          <td>2 horas</td>
+          <td style="color:var(--accent)">1 click (automático)</td>
+          <td style="color:var(--accent)">95%</td>
+        </tr>
+        <tr>
+          <td>Cobrar honorarios atrasados</td>
+          <td>30 min (incómodo)</td>
+          <td style="color:var(--accent)">Automático (agente)</td>
+          <td style="color:var(--accent)">100%</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="highlight-box" style="margin-top:20px;">
+      <div class="hb-body"><strong style="color:var(--white)">Resultado:</strong> Lo que hoy requiere 12+ horas de trabajo manual diario se reduce a <strong style="color:var(--accent)">~2 horas de supervisión</strong>. El equipo pasa de capturistas a asesores.</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: IMPLEMENTACIÓN -->
+  <div class="slide" data-slide="9" style="background: linear-gradient(180deg, #0a1628 0%, #0f172a 100%);">
+    <div class="slide-tag">Implementación</div>
+    <h2 class="slide-title">Cómo lo hacemos</h2>
+
+    <div class="grid-2">
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-week">SEMANA 1-2</div>
+          <div class="tl-title">Diagnóstico + Quick Wins</div>
+          <div class="tl-desc">Mapeo de procesos actuales, herramientas, volúmenes. Activar automatizaciones inmediatas: descarga CFDI, conciliaciones, alertas.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-week">SEMANA 3-4</div>
+          <div class="tl-title">Automatización Core</div>
+          <div class="tl-desc">Clasificación con IA, registro automático de pólizas, pre-llenado de declaraciones, reportes automáticos.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-week">SEMANA 5-6</div>
+          <div class="tl-title">Agentes Inteligentes</div>
+          <div class="tl-desc">Agente de voz/WhatsApp para atención a clientes, solicitud de documentos, recordatorios de cobro.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-week">SEMANA 7-8</div>
+          <div class="tl-title">Optimización + Capacitación</div>
+          <div class="tl-desc">Ajustes finos, entrenamiento del equipo, documentación de procesos nuevos, soporte en vivo.</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="highlight-box" style="margin-top:0;">
+          <div class="hb-title">Enfoque incremental</div>
+          <div class="hb-body">Cada semana entregamos valor funcional. No esperamos 2 meses para que veas resultados — los quick wins llegan en los primeros días.</div>
+        </div>
+
+        <div class="highlight-box">
+          <div class="hb-title">Sin disrupciones</div>
+          <div class="hb-body">No reemplazamos tu sistema contable. Nos conectamos a lo que ya usas (CONTPAQi, Aspel, AdminPAQ, Excel — lo que sea) y automatizamos alrededor.</div>
+        </div>
+
+        <div class="highlight-box">
+          <div class="hb-title">Tu equipo aprende</div>
+          <div class="hb-body">Capacitación práctica para que tu gente sepa usar y supervisar las automatizaciones. No dependencia eterna — transferencia de conocimiento real.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: PAQUETES -->
+  <div class="slide" data-slide="10" style="background: linear-gradient(180deg, #0a1628 0%, #0f172a 100%);">
+    <div class="slide-tag">Inversión</div>
+    <h2 class="slide-title">Paquetes de servicio</h2>
+
+    <div class="price-cards">
+      <div class="price-card">
+        <div class="price-card-tag">Esencial</div>
+        <div class="price-card-name">Automatización Base</div>
+        <div class="price-card-time">4 semanas</div>
+        <div class="price-card-price">$80K–$150K</div>
+        <div class="price-card-unit">MXN setup + $15K/mes</div>
+        <ul class="price-card-list">
+          <li>Descarga automática de CFDI</li>
+          <li>Conciliaciones bancarias automatizadas</li>
+          <li>Clasificación de gastos con IA</li>
+          <li>Alertas de vencimientos fiscales</li>
+          <li>Reportes automáticos básicos</li>
+          <li>Capacitación del equipo</li>
+        </ul>
+      </div>
+
+      <div class="price-card featured">
+        <div class="price-card-tag">Recomendado</div>
+        <div class="price-card-name">Transformación Completa</div>
+        <div class="price-card-time">6-8 semanas</div>
+        <div class="price-card-price">$200K–$350K</div>
+        <div class="price-card-unit">MXN setup + $30K/mes</div>
+        <ul class="price-card-list">
+          <li>Todo lo de Automatización Base</li>
+          <li>Registro automático de pólizas</li>
+          <li>Pre-llenado de declaraciones</li>
+          <li>Agente de voz para clientes</li>
+          <li>Agente de WhatsApp</li>
+          <li>Solicitud automática de documentos</li>
+          <li>Cobro automatizado de honorarios</li>
+          <li>Dashboard de productividad</li>
+        </ul>
+      </div>
+
+      <div class="price-card">
+        <div class="price-card-tag">Premium</div>
+        <div class="price-card-name">Despacho del Futuro</div>
+        <div class="price-card-time">8-12 semanas</div>
+        <div class="price-card-price">$400K–$700K</div>
+        <div class="price-card-unit">MXN setup + $50K/mes</div>
+        <ul class="price-card-list">
+          <li>Todo lo de Transformación Completa</li>
+          <li>Nómina automatizada + timbrado</li>
+          <li>Portal de clientes personalizado</li>
+          <li>Monitoreo de cambios fiscales con IA</li>
+          <li>Análisis predictivo de flujo de efectivo</li>
+          <li>Onboarding digital de clientes</li>
+          <li>Integraciones a medida</li>
+          <li>Soporte prioritario 24/7</li>
+        </ul>
+      </div>
+    </div>
+
+    <p style="font-size:12px; color:var(--mid); text-align:center; margin-top:20px; font-family:'IBM Plex Mono',monospace; line-height:1.6;">Precio según número de clientes del despacho, complejidad de operación, y sistemas actuales.<br>Setup es one-time. Mensualidad incluye hosting, mantenimiento, actualizaciones y soporte.<br>IVA no incluido. Cotización final después de diagnóstico.</p>
+  </div>
+
+  <!-- SLIDE 11: ROI -->
+  <div class="slide" data-slide="11" style="background: linear-gradient(180deg, #0a1628 0%, #0f172a 100%);">
+    <div class="slide-tag">Retorno de inversión</div>
+    <h2 class="slide-title">Los números hablan</h2>
+
+    <div class="grid-2">
+      <div>
+        <div class="section-sub">Ejemplo: Despacho con 50 clientes</div>
+        <table class="clean-table">
+          <thead>
+            <tr><th>Concepto</th><th style="text-align:right">Mensual</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Ahorro en horas-hombre (160 hrs/mes)</td>
+              <td style="text-align:right; color:var(--accent)">$80,000</td>
+            </tr>
+            <tr>
+              <td>Clientes adicionales sin contratar (10-15)</td>
+              <td style="text-align:right; color:var(--accent)">$50,000–$75,000</td>
+            </tr>
+            <tr>
+              <td>Reducción de errores y multas</td>
+              <td style="text-align:right; color:var(--accent)">$15,000</td>
+            </tr>
+            <tr>
+              <td>Cobro mejorado (menos cartera vencida)</td>
+              <td style="text-align:right; color:var(--accent)">$20,000</td>
+            </tr>
+            <tr>
+              <td style="color:var(--accent); font-size:16px;"><strong>Beneficio total estimado</strong></td>
+              <td style="text-align:right; color:var(--accent); font-size:16px;"><strong>$165K–$190K/mes</strong></td>
+            </tr>
+            <tr>
+              <td>Inversión mensual (paquete Transformación)</td>
+              <td style="text-align:right; color:var(--gray)">-$30,000</td>
+            </tr>
+            <tr>
+              <td style="color:var(--white); font-size:16px;"><strong>Ganancia neta</strong></td>
+              <td style="text-align:right; color:var(--accent); font-size:16px;"><strong>$135K–$160K/mes</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="highlight-box" style="margin-top:0;">
+          <div class="hb-title">ROI en el primer mes</div>
+          <div class="hb-body">El setup se paga solo en los primeros 2-3 meses. A partir del mes 3, todo es ganancia neta — ya sea en ahorro de costos o en capacidad de crecer sin contratar.</div>
+        </div>
+
+        <div class="highlight-box">
+          <div class="hb-title">El verdadero valor</div>
+          <div class="hb-body">No es solo dinero. Es que tu equipo deja de odiar el cierre mensual. Es que tus clientes reciben respuestas en segundos, no en días. Es que puedes irte de vacaciones y el despacho sigue operando.</div>
+        </div>
+
+        <div class="highlight-box">
+          <div class="hb-title">Escalabilidad</div>
+          <div class="hb-body">Pasar de 50 a 100 clientes sin contratar un solo contador más. Las automatizaciones escalan linealmente — los costos no.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 12: CIERRE -->
+  <div class="slide slide-cover" data-slide="12">
+    <div class="cover-tag">Siguiente paso</div>
+    <div class="cover-line"></div>
+    <h1 class="cover-title" style="font-size:clamp(32px, 5vw, 56px);">¿Modernizamos<br>tu despacho?</h1>
+    <p class="cover-subtitle" style="font-size:clamp(16px, 2vw, 20px); max-width:700px;">El primer paso es un diagnóstico de 1 hora donde mapeamos tus procesos actuales, identificamos los quick wins, y armamos un plan a tu medida. Sin costo. Sin compromiso.</p>
+    
+    <div style="margin-top: 40px;">
+      <p style="font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--accent); letter-spacing:2px; margin-bottom:12px;">CONTACTO</p>
+      <p style="font-size:18px; color:var(--white); margin-bottom:6px;">Raul Zhou</p>
+      <p style="font-size:15px; color:var(--gray);">raul.chio.leon@gmail.com</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- NAV -->
+<div class="slide-counter"><span id="current">1</span> / <span id="total">12</span></div>
+<div class="nav">
+  <button onclick="go(-1)">←</button>
+  <button onclick="go(1)">→</button>
+</div>
+
+<script>
+  let cur = 1;
+  const total = document.querySelectorAll('.slide').length;
+  document.getElementById('total').textContent = total;
+
+  function go(d) {
+    const next = cur + d;
+    if (next < 1 || next > total) return;
+    document.querySelector('.slide.active').classList.remove('active');
+    cur = next;
+    const s = document.querySelector(`[data-slide="${cur}"]`);
+    s.style.display = 'flex';
+    requestAnimationFrame(() => { s.classList.add('active'); });
+    document.getElementById('current').textContent = cur;
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') go(1);
+    if (e.key === 'ArrowLeft') go(-1);
+  });
+
+  let tx = 0;
+  document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
+  });
+</script>
+
+</body>
+</html>
