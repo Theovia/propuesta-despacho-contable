@@ -1140,7 +1140,6 @@
           <li>Todo lo de Esencial</li>
           <li>Registro automático de pólizas en tu sistema</li>
           <li>Pre-llenado de declaraciones mensuales/anuales</li>
-          <li>Generación automática de DIOT y Contabilidad Electrónica XML</li>
           <li>Agente de voz con número dedicado del despacho</li>
           <li>Agente de WhatsApp Business conectado</li>
           <li>Sistema de cobro automatizado de honorarios</li>
@@ -1159,6 +1158,9 @@
           <li>Todo lo de Transformación Completa</li>
           <li>Nómina automatizada con timbrado masivo</li>
           <li>Portal web de clientes con tu marca</li>
+          <li>Generación automática de DIOT y Contabilidad Electrónica XML</li>
+          <li>Agente de voz con número dedicado del despacho</li>
+          <li>Agente de WhatsApp Business conectado</li>
           <li>Onboarding digital (formulario inteligente)</li>
           <li>Monitor de cambios fiscales con IA</li>
           <li>Análisis predictivo de flujo de efectivo</li>
@@ -1168,10 +1170,7 @@
       </div>
     </div>
 
-    <div class="highlight-box" style="margin-top:20px; text-align:center;">
-      <div class="hb-body" style="font-size:14px;">No somos la opción más barata — somos la opción que <strong style="color:var(--white);">realmente escala</strong>. Si quieres pasar de 30 a 100+ clientes sin triplicar tu equipo, necesitas arquitectura inteligente diseñada por un experto en IA con el alcance para construirla de punta a punta. <strong style="color:var(--accent);">Esto no es software genérico — es tu ventaja competitiva.</strong></div>
-    </div>
-    <p style="font-size:11px; color:var(--mid); text-align:center; margin-top:12px; font-family:'IBM Plex Mono',monospace; line-height:1.6;">Setup es pago único. Mensualidad incluye hosting, mantenimiento, actualizaciones, y soporte. Precio según número de clientes, complejidad de operación, y sistemas actuales. IVA no incluido. Cotización final después de diagnóstico.</p>
+    <p style="font-size:11px; color:var(--mid); text-align:center; margin-top:16px; font-family:'IBM Plex Mono',monospace; line-height:1.6;">Setup es pago único. Mensualidad incluye hosting, mantenimiento, actualizaciones, y soporte. Precio según número de clientes, complejidad de operación, y sistemas actuales. IVA no incluido. Cotización final después de diagnóstico.</p>
     <p style="font-size:12px; color:#10b981; text-align:center; margin-top:12px; font-family:'IBM Plex Mono',monospace;"><a href="./anexo-tecnico.html" target="_blank" style="color:#10b981; text-decoration:none; border-bottom:1px solid rgba(16,185,129,0.3); position:relative; z-index:50;">📄 Ver anexo técnico con detalle de factibilidad por proceso →</a></p>
   </div>
 
@@ -1259,7 +1258,7 @@
 </div>
 
 <!-- NAV -->
-<div class="slide-counter"><span id="current">1</span> / <span id="total">14</span></div>
+<div class="slide-counter"><span id="current">1</span> / <span id="total">13</span></div>
 <div class="nav">
   <button onclick="go(-1)">←</button>
   <button onclick="go(1)">→</button>
@@ -1273,9 +1272,7 @@
   function go(d) {
     const next = cur + d;
     if (next < 1 || next > total) return;
-    const prev = document.querySelector('.slide.active');
-    prev.classList.remove('active');
-    prev.style.display = '';
+    document.querySelector('.slide.active').classList.remove('active');
     cur = next;
     const s = document.querySelector(`[data-slide="${cur}"]`);
     s.style.display = 'flex';
