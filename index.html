@@ -1273,7 +1273,9 @@
   function go(d) {
     const next = cur + d;
     if (next < 1 || next > total) return;
-    document.querySelector('.slide.active').classList.remove('active');
+    const prev = document.querySelector('.slide.active');
+    prev.classList.remove('active');
+    prev.style.display = '';
     cur = next;
     const s = document.querySelector(`[data-slide="${cur}"]`);
     s.style.display = 'flex';
